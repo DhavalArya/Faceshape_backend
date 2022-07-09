@@ -2,7 +2,7 @@ const express = require('express');
 const { check } = require('express-validator');
 
 const facesControllers = require('../controllers/faces-controllers');
-const fileUpload = require('../middleware/file-upload');
+const {fileUpload, upload} = require('../middleware/file-upload');
 const checkAuth = require('../middleware/check-auth');
 
 const router = express.Router();
@@ -15,7 +15,7 @@ router.use(checkAuth);
 
 router.post(
   '/',
-  fileUpload.single('image'),
+  upload.single('image'),
   [
     check('title')
       .not()

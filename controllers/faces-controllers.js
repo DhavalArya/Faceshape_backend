@@ -2,13 +2,12 @@ const fs = require('fs');
 
 const { validationResult } = require('express-validator');
 const mongoose = require('mongoose');
-const fetch = require('node-fetch');
-const imageToBase64 = require('image-to-base64');
-var FormData = require('form-data');
 
 const HttpError = require('../models/http-error');
 const Face = require('../models/face');
 const User = require('../models/user');
+
+const aws = require('aws-sdk');
 
 const getFaceById = async (req, res, next) => {
   const faceId = req.params.pid;
@@ -38,7 +37,6 @@ const getFaceById = async (req, res, next) => {
 const getFacesByUserId = async (req, res, next) => {
   const userId = req.params.uid;
 
-  let faces;
   let userWithFaces;
   try {
     userWithFaces = await User.findById(userId).populate('faces');
@@ -78,7 +76,8 @@ const createFace = async (req, res, next) => {
   const createdFace = new Face({
     title,
     description,
-    image: req.file.path,
+    // image: req.file.path,
+    image: 'uploads/images/' + req.file.location.split('/').pop(),
     creator: req.userData.userId
   });
 
@@ -208,6 +207,13 @@ const deleteFace = async (req, res, next) => {
   fs.unlink(imagePath, err => {
     console.log(err);
   });
+
+  const BUCKET = process.env.BUCKET
+  const s3 = new aws.S3();
+  const filename = imagePath.split('/').pop();
+  console.log('filename');
+  console.log(filename);
+  await s3.deleteObject({ Bucket: BUCKET, Key: filename }).promise();
 
   res.status(200).json({ message: 'Deleted face.' });
 };
