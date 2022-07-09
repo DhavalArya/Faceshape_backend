@@ -26,7 +26,7 @@ const upload = multer({
       s3: s3,
       bucket: BUCKET,
       key: function (req, file, cb) {
-          console.log(file);
+          // console.log(file);
           const ext = MIME_TYPE_MAP[file.mimetype];
           cb(null, uuid() + '.' + ext);
       }

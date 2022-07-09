@@ -97,7 +97,7 @@ const createFace = async (req, res, next) => {
     return next(error);
   }
 
-  console.log(user);
+  // console.log(user);
 
   try {
     const sess = await mongoose.startSession();
@@ -211,8 +211,6 @@ const deleteFace = async (req, res, next) => {
   const BUCKET = process.env.BUCKET
   const s3 = new aws.S3();
   const filename = imagePath.split('/').pop();
-  console.log('filename');
-  console.log(filename);
   await s3.deleteObject({ Bucket: BUCKET, Key: filename }).promise();
 
   res.status(200).json({ message: 'Deleted face.' });
