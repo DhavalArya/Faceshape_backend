@@ -16,12 +16,12 @@ const aws = require('aws-sdk');
 const { stat } = require('fs/promises');
 
 aws.config.update({
-  secretAccessKey: process.env['ACCESS_SECRET'],
-  accessKeyId: process.env['ACCESS_KEY'],
-  region: process.env['REGION'],
+  secretAccessKey: process.env.ACCESS_SECRET,
+  accessKeyId: process.env.ACCESS_KEY,
+  region: process.env.REGION,
 
 });
-const BUCKET = process.env['BUCKET']
+const BUCKET = process.env.BUCKET
 const s3 = new aws.S3();
 
 const app = express();
@@ -90,10 +90,10 @@ app.use((error, req, res, next) => {
 
 mongoose
   .connect(
-    `mongodb+srv://${process.env['DB_USERNAME']}:${process.env['DB_PASSWORD']}@cluster0.bpdo4.mongodb.net/${process.env['DB_NAME']}?retryWrites=true&w=majority`, {useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true}
+    `mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@cluster0.bpdo4.mongodb.net/${process.env.DB_NAME}?retryWrites=true&w=majority`, {useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true}
   )
   .then(() => {
-    app.listen(process.env['PORT'] || 5000);
+    app.listen(process.env.PORT || 5000);
   })
   .catch(err => {
     console.log(err);

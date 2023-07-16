@@ -208,7 +208,7 @@ const deleteFace = async (req, res, next) => {
     console.log(err);
   });
 
-  const BUCKET = process.env['BUCKET']
+  const BUCKET = process.env.BUCKET
   const s3 = new aws.S3();
   const filename = imagePath.split('/').pop();
   await s3.deleteObject({ Bucket: BUCKET, Key: filename }).promise();
