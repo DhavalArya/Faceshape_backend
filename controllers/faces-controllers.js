@@ -77,10 +77,10 @@ const createFace = async (req, res, next) => {
     title,
     description,
     // image: req.file.path,
-    image: 'uploads/images/' + req.file.location.split('/').pop(),
+    image: 'uploads/images/' + req.file.key,
     creator: req.userData.userId
   });
-
+  console.log(req.file)
   let user;
   try {
     user = await User.findById(req.userData.userId);
@@ -108,12 +108,13 @@ const createFace = async (req, res, next) => {
     await sess.commitTransaction();
   } catch (err) {
     const error = new HttpError(
-      'Creating face failed, please try again 2.',
+      'Creating face failed while uploading to database, please try again.',
       500
     );
     return next(error);
   }
 
+  console.log('created face!')
   res.status(201).json({ face: createdFace });
 };
 
@@ -126,7 +127,7 @@ const updateFace = async (req, res, next) => {
   }
 
   const { title, description } = req.body;
-  const faceId = req.params.fid;
+  const faceId = req.params.pid;
 
   let face;
   try {
@@ -189,6 +190,24 @@ const deleteFace = async (req, res, next) => {
 
   const imagePath = face.image;
 
+  // fs.unlink(imagePath, err => {
+  //   console.log(err);
+  // });
+
+  // try{
+  //   const BUCKET = process.env.BUCKET
+  //   const s3 = new aws.S3();
+  //   const filename = '39251070-25b6-11ee-a52d-2fff0c6647aa.jpeg';
+  //   await s3.deleteObject({ Bucket: BUCKET, Key: filename }).promise();
+  // } catch(err){
+  //   console.log(err);
+  //   const error = new HttpError(
+  //     'Something went wrong, could not delete face.',
+  //     500
+  //   );
+  //   return next(error);
+  // }
+
   try {
     const sess = await mongoose.startSession();
     sess.startTransaction();
@@ -203,15 +222,6 @@ const deleteFace = async (req, res, next) => {
     );
     return next(error);
   }
-
-  fs.unlink(imagePath, err => {
-    console.log(err);
-  });
-
-  const BUCKET = process.env.BUCKET
-  const s3 = new aws.S3();
-  const filename = imagePath.split('/').pop();
-  await s3.deleteObject({ Bucket: BUCKET, Key: filename }).promise();
 
   res.status(200).json({ message: 'Deleted face.' });
 };
